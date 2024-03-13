@@ -11,5 +11,9 @@ public class User {
     private int id;
     private String username;
     private Organization organization;
+
+    public User (String username_) {
+        this.username = username_;
+    }
 }
 

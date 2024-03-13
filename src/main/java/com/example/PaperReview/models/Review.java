@@ -12,7 +12,7 @@ import java.util.Date;
 public class Review {
     private int id;
     private int paperId;
-    private int authorId;
+    private User author;
     private String content;
     private Date creationDate;
     private String sentimentLabel;

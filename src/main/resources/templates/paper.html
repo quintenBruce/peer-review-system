@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .header-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-link {
+            color: white;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .user-greeting {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="header :: header" th:with="${username}"></div>
+
+<h1 th:text="'Title: ' + ${paper.title}"></h1>
+<p th:text="'Description: ' + ${paper.description}"></p>
+
+<embed th:src="@{'/pdf/view/' + ${paper.id}}" type="application/pdf" width="100%" height="600px"/>
+
+<div>
+    <h2>Review Sentiment Details</h2>
+    <p th:text="'Sentiment Label: ' + ${paper.sentimentLabel}"></p>
+    <p th:text="'Sentiment Score: ' + ${paper.sentimentScore}"></p>
+    <p th:text="'Sentiment Magnitude: ' + ${paper.sentimentMagnitude}"></p>
+</div>
+
+<!-- Display Reviews -->
+<div th:if="${not #lists.isEmpty(paper.reviews)}">
+    <h2>Reviews</h2>
+    <ul>
+        <li th:each="review : ${paper.reviews}">
+            <!-- Display review details as needed -->
+            <p th:text="${review.author.username} + ': ' + ${review.content}"></p>
+        </li>
+    </ul>
+</div>
+
+<div th:if="${isReviewer}">
+    <label for="reviewText">Write a review here:</label>
+    <textarea id="reviewText" name="reviewText" rows="4" cols="50" th:data-paper-id="${paper.id}"></textarea>
+    <button onclick="submitReview()">Submit Review</button>
+</div>
+
+<script src="/js/paper.js"></script>
+
+</body>
+</html>
+
