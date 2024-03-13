@@ -36,6 +36,13 @@
 
 <h1 th:text="'Title: ' + ${paper.title}"></h1>
 <p th:text="'Description: ' + ${paper.description}"></p>
+<p>
+    Authors:
+    <span th:each="author, iterStat : ${paper.authors}">
+        <span th:text="${author.username}"></span>
+        <span th:if="${!iterStat.last}">, </span>
+    </span>
+</p>
 
 <embed th:src="@{'/pdf/view/' + ${paper.id}}" type="application/pdf" width="100%" height="600px"/>
 
