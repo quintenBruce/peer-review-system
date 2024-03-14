@@ -1,0 +1,27 @@
+body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between; /* Align items to the start and end of the header */
+            align-items: center; /* Align items vertically in the center */
+        }
+
+        .header-links {
+            display: flex;
+        }
+
+        .header-link {
+            color: white;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .user-greeting {
+            margin-right: auto; /* Push the greeting to the very far left */
+        }

@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,40 +20,51 @@ import java.util.Set;
 @ComponentScan("com.example.PaperReview")
 
 public class PaperReviewApplication {
-	public static User user = new User();
+	public static User userReviewer = new User("user1");
+	public static User userAuthor = new User("user2");
 
 	public static void main(String[] args) {
-		PaperRepository.putPaper(createTestPaper());
+		UserRepository.putUser(userReviewer);
+		UserRepository.putUser(userAuthor);
+
+		//create 2 papers with the same aurthor and same authorized reviewer
+		PaperRepository.putPaper(createTestPaper(userAuthor, userReviewer));
+		PaperRepository.putPaper(createTestPaper2(userAuthor, userReviewer));
+		//user2 will have 2 papers. user1 will have 2 papers to review
 
 
-
-		user.setUsername("admin");
-		UserRepository.putUser(user);
 
 		SpringApplication.run(PaperReviewApplication.class, args);
-//		String t = PDFService.extractText("src/main/java/com/example/PaperReview/Projects - Tagged.pdf");
-//		System.out.println(t);
 	}
 
-	// Method to create a test paper object
-	private static Paper createTestPaper() {
+	private static Paper createTestPaper(User author, User authorizedReviewer) {
 		Paper paper = new Paper();
+
+		//id
 		paper.setId(1);
+
+		//pdf content
 		paper.setContent(PDFService.toByteArray("src/main/java/com/example/PaperReview/Projects - Tagged.pdf")); // Replace with actual content
+
+		//basic information
 		paper.setTitle("Test Paper");
 		paper.setDescription("This is a test paper");
 		paper.setCreationDate(new Date());
-		paper.setSentimentLabel("Positive");
+
+		//sentiment
+		paper.setSentimentLabel("Default Label");
 		paper.setSentimentScore(0f);
+
+		//idfk
 		paper.setPublished(true);
 
-		// Add test reviews
+		// test reviews
 		Review review1 = new Review();
-		review1.setAuthor(new User("Becky Smith"));
+		review1.setAuthor(new User("Becky Smith (test)"));
 		review1.setContent("Great paper!");
 
 		Review review2 = new Review();
-		review2.setAuthor(new User("Teddy Wilson"));
+		review2.setAuthor(new User("Michael Jacksun (test)"));
 		review2.setContent("""
     The submitted content admirably explores the intricate realms of parallelism and concurrency, showcasing a thoughtful amalgamation of insights. The author skillfully navigates the landscape, emphasizing the pivotal role of concurrency in optimizing computational processes. The adept use of technical language and precise articulation underscores the author's command over the subject matter.
 
@@ -67,21 +77,76 @@ public class PaperReviewApplication {
 		Set<Review> reviews = new HashSet<>();
 		reviews.add(review2);
 		reviews.add(review1);
-
 		paper.setReviews(reviews);
 
+		//authors
 		Set<User> authors = new HashSet<>();
-
-
+		authors.add(author);
 		paper.setAuthors(authors);
 
-		paper.getAuthorizedReviewers().add(user);
-
-
-
-
+		//authorized reviewers
+		paper.getAuthorizedReviewers().add(authorizedReviewer);
+		//categories
 		Set<Category> categories = new HashSet<>();
+		paper.setCategories(categories);
 
+		return paper;
+	}
+
+	private static Paper createTestPaper2(User author, User authorizedReviewer) {
+		Paper paper = new Paper();
+
+		//id
+		paper.setId(2);
+
+		//pdf content
+		paper.setContent(PDFService.toByteArray("src/main/java/com/example/PaperReview/haskellPaper.pdf"));
+
+		//basic information
+		paper.setTitle("The Second Test Paper");
+		paper.setDescription("This is a test paper. The second one, to be exact. ");
+		paper.setCreationDate(new Date());
+
+		//sentiment
+		paper.setSentimentLabel("Default Label");
+		paper.setSentimentScore(0f);
+		paper.setSentimentMagnitude(0f);
+
+		//idfk
+		paper.setPublished(true);
+
+		// test reviews
+		Review review1 = new Review();
+		review1.setAuthor(new User("Teddy Smith (test)"));
+		review1.setContent("Mediocre! I am enthusiastically reviewing this paper.");
+		review1.setPaperId(2);
+
+		Review review2 = new Review();
+		review2.setPaperId(2);
+		review2.setAuthor(new User("The Prime Time (test)"));
+		review2.setContent("""
+    The submitted content admirably explores the intricate realms of parallelism and concurrency, showcasing a thoughtful amalgamation of insights. The author skillfully navigates the landscape, emphasizing the pivotal role of concurrency in optimizing computational processes. The adept use of technical language and precise articulation underscores the author's command over the subject matter.
+
+				The manuscript delves into the nuanced intricacies of parallel execution, shedding light on its significance in enhancing overall system performance. The seamless integration of theoretical frameworks with practical applications serves as a commendable aspect, contributing to the scholarly merit of the work.
+
+						Furthermore, the author's adeptness in elucidating complex concepts is evident throughout the text. The discussion on parallel algorithms and their efficacy in real-world scenarios is particularly enlightening. The meticulous exploration of concurrency models and their impact on system efficiency adds depth to the narrative.
+
+		In conclusion, the submitted manuscript presents a well-crafted examination of parallelism and concurrency, showcasing the author's expertise in the field. The positive tone, coupled with the comprehensive coverage of the subject matter, makes this contribution a valuable addition to the scientific discourse on the topic.""");
+
+		Set<Review> reviews = new HashSet<>();
+		reviews.add(review2);
+		reviews.add(review1);
+		paper.setReviews(reviews);
+
+		//authors
+		Set<User> authors = new HashSet<>();
+		authors.add(author);
+		paper.setAuthors(authors);
+
+		//authorized reviewers
+		paper.getAuthorizedReviewers().add(authorizedReviewer);
+		//categories
+		Set<Category> categories = new HashSet<>();
 		paper.setCategories(categories);
 
 		return paper;

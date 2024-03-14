@@ -31,7 +31,6 @@ public class PaperViewModel {
     private boolean isReviewer;
     private boolean isPublished;
 
-    // Constructors, getters, setters, and other methods
     public PaperViewModel(int id, byte[] content, Set<User> Authors, Set<Review> reviews, Set<Category> categories) {
         this.id = id;
         this.content = content;
@@ -41,9 +40,4 @@ public class PaperViewModel {
         // Initialize other fields as needed...
     }
 
-    public PaperViewModel(int id, byte[] content) {
-        this.id = id;
-        this.content = content;
-        // Initialize other fields as needed...
-    }
 }

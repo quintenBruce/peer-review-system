@@ -2,48 +2,21 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <style>
-        /* Your global styles here */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
 
-        header {
-            background-color: #333;
-            color: white;
-            padding: 10px;
-            text-align: right;
-            position: relative;
-        }
-
-        .header-link {
-            color: white;
-            text-decoration: none;
-            margin-left: 10px;
-            display: inline-block;
-        }
-
-        .user-greeting {
-            position: absolute;
-            right: 10px;
-        }
-    </style>
 </head>
 
 <body>
 <header>
-    <!-- Access the 'username' from the model or session -->
     <p class="user-greeting" th:if="${username != null}" th:text="'Hello, ' + ${username}"></p>
 
-    <!-- Header links floated to the left -->
-    <a class="header-link" th:href="@{/logout}">Logout</a>
-    <a class="header-link" th:href="@{/my-papers}">My Papers</a>
-    <a class="header-link" th:href="@{/my-reviews}">My Reviews</a>
-    <a class="header-link" th:href="@{/home}">Home</a>
+    <div class="header-links">
+        <a class="header-link" th:href="@{/logout}">Logout</a>
+<!--        <a class="header-link" th:href="@{/my-papers}">My Papers</a>-->
+<!--        <a class="header-link" th:href="@{/my-reviews}">My Reviews</a>-->
+        <a class="header-link" th:href="@{/home}">Home</a>
+    </div>
 
-    <!-- Account link floated to the right -->
-    <a class="header-link" th:href="@{/account}" style="margin-left: auto;">Account</a>
+    <a class="header-link" th:href="@{/account}">Account</a>
 </header>
 </body>
 

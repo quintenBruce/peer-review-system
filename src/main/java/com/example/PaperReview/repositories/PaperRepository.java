@@ -3,20 +3,28 @@ package com.example.PaperReview.repositories;
 import com.example.PaperReview.models.Paper;
 import com.example.PaperReview.models.Review;
 import com.example.PaperReview.models.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
+@Data
 public class PaperRepository {
-    private static final Map<Integer, Paper> paperMap = new HashMap<>();
+    private static final List<Paper> papers = new ArrayList<>();
     private static int nextId = 1;
 
-    private PaperRepository() {
-        // private constructor to prevent instantiation
-    }
-
     public static byte[] getContentById(int paperId) {
-        Paper paper = paperMap.get(paperId);
+        Paper paper = getPaperById(paperId);
         return paper != null ? paper.getContent() : null;
+    }
+    public static void removeAuthorizedReviewer(int paperId, User reviewer) {
+        Paper paper = getPaperById(paperId);
+        if (paper != null) {
+            paper.getAuthorizedReviewers().remove(reviewer);
+            papers.set(papers.indexOf(paper), paper);
+        }
     }
 
     public static Paper putPaper(Paper paper) {
@@ -24,98 +32,62 @@ public class PaperRepository {
             // If the paper doesn't have an ID, assign the next available ID
             paper.setId(nextId++);
         }
-        paperMap.put(paper.getId(), paper);
+        papers.add(paper);
         return paper;
     }
 
-    public static Paper getPaper(int id) {
-        return paperMap.get(id);
+    public static Paper getPaperById(int id) {
+        for (Paper paper : papers) {
+            if (paper.getId() == id) {
+                return paper;
+            }
+        }
+        return null;
     }
-
-    public static Collection<Paper> getAllPapers() {
-        return paperMap.values();
-    }
-
-    // Other methods as needed...
 
     public static void deletePaper(int id) {
-        paperMap.remove(id);
+        papers.removeIf(paper -> paper.getId() == id);
     }
 
     public static void addReviewToPaper(int paperId, Review review) {
-        Paper paper = paperMap.get(paperId);
+        Paper paper = getPaperById(paperId);
         if (paper != null) {
             paper.getReviews().add(review);
-            // Update the paper in the repository
-            paperMap.put(paperId, paper);
         }
     }
 
-    // Method to add an author to a paper
-    public static void addAuthorToPaper(int paperId, User author) {
-        Paper paper = paperMap.get(paperId);
-        if (paper != null) {
-            paper.getAuthors().add(author);
-            // Update the paper in the repository
-            paperMap.put(paperId, paper);
+    public static List<Paper> getPapersByUser(User user) {
+        List<Paper> userPapers = new ArrayList<>();
+        for (Paper paper : papers) {
+            if (paper.getAuthors().contains(user)) {
+                userPapers.add(paper);
+            }
         }
+        return userPapers;
     }
+    public static List<Paper> getPapersToReview(User reviewer) {
+        List<Paper> papersToReview = new ArrayList<>();
 
-    // Method to add sentiment details to a paper
-    public static void addSentimentDetailsToPaper(int paperId, String sentimentLabel, float sentimentScore) {
-        Paper paper = paperMap.get(paperId);
-        if (paper != null) {
-            paper.setSentimentLabel(sentimentLabel);
-            paper.setSentimentScore(sentimentScore);
-            // Update the paper in the repository
-            paperMap.put(paperId, paper);
-        }
-    }
-
-    public static List<Integer> getPaperIdsByAuthor(User author) {
-        List<Integer> paperIds = new ArrayList<>();
-
-        for (Map.Entry<Integer, Paper> entry : paperMap.entrySet()) {
-            Paper paper = entry.getValue();
-            if (paper.getAuthors().contains(author)) {
-                paperIds.add(entry.getKey());
+        for (Paper paper : papers) {
+            if (paper.getAuthorizedReviewers().contains(reviewer)) {
+                papersToReview.add(paper);
             }
         }
 
-        return paperIds;
+        return papersToReview;
     }
-    public static void addSentimentDetailsToPaper(int paperId, String sentimentLabel, float sentimentScore, float sentimentMagnitude) {
-        Paper paper = paperMap.get(paperId);
-        if (paper != null) {
-            paper.setSentimentLabel(sentimentLabel);
-            paper.setSentimentScore(sentimentScore);
-            paper.setSentimentMagnitude(sentimentMagnitude);
-            // Update the paper in the repository
-            paperMap.put(paperId, paper);
+    public static List<Review> getReviewsByAuthor(User author) {
+        List<Review> reviewsContent = new ArrayList<>();
+
+        for (Paper paper : papers) {
+            for (Review review : paper.getReviews()) {
+                if (review.getAuthor().equals(author)) {
+                    reviewsContent.add(review);
+                }
+            }
         }
+
+        return reviewsContent;
     }
 
-    // Additional method to update sentiment details without modifying existing ones
-    public static void updateSentimentDetails(int paperId, float sentimentScore, float sentimentMagnitude) {
-        Paper paper = paperMap.get(paperId);
-        if (paper != null) {
-            paper.setSentimentScore(sentimentScore);
-            paper.setSentimentMagnitude(sentimentMagnitude);
-            // Update the paper in the repository
-            paperMap.put(paperId, paper);
-        }
-    }
-
-    public static Paper updatePaper(Paper updatedPaper) {
-        int paperId = updatedPaper.getId();
-
-        if (paperMap.containsKey(paperId)) {
-            // Replace the existing paper with the updated one
-            paperMap.put(paperId, updatedPaper);
-            return updatedPaper;
-        } else {
-            // Paper with the given ID not found
-            return null;
-        }
-    }
 }

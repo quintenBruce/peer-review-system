@@ -1,52 +1,77 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PeerReviewPro</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .header-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-link {
+            color: white;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .user-greeting {
+            color: white;
+        }
+    </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">PeerReviewPro</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">About</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Contact</a>
-            </li>
-        </ul>
-    </div>
-</nav>
+<div th:replace="header :: header" th:with="${username}"></div>
 
-<div class="container mt-5">
-    <div class="jumbotron">
-        <h1 class="display-4">Welcome to PeerReviewPro!</h1>
-        <p class="lead">A platform for efficient and effective paper reviews.</p>
-        <hr class="my-4">
-        <p>Get started by logging in or signing up.</p>
-        <a class="btn btn-primary btn-lg" href="#" role="button">Login</a>
-        <a class="btn btn-success btn-lg" href="#" role="button">Sign Up</a>
-    </div>
+<h1 th:text="'Title: ' + ${paper.title}"></h1>
+<p th:text="'Description: ' + ${paper.description}"></p>
+<p>
+    Authors:
+    <span th:each="author, iterStat : ${paper.authors}">
+        <span th:text="${author.username}"></span>
+        <span th:if="${!iterStat.last}">, </span>
+    </span>
+</p>
+
+<embed th:src="@{'/pdf/view/' + ${paper.id}}" type="application/pdf" width="100%" height="600px"/>
+
+<div>
+    <h2>Review Sentiment Details</h2>
+    <p th:text="'Sentiment Label: ' + ${paper.sentimentLabel}"></p>
+    <p th:text="'Sentiment Score: ' + ${paper.sentimentScore}"></p>
+    <p th:text="'Sentiment Magnitude: ' + ${paper.sentimentMagnitude}"></p>
 </div>
 
-<footer class="footer bg-dark text-white text-center py-3">
-    <div class="container">
-        <span>&copy; 2024 PeerReviewPro. All rights reserved.</span>
-    </div>
-</footer>
+<!-- Display Reviews -->
+<div th:if="${not #lists.isEmpty(paper.reviews)}">
+    <h2>Reviews</h2>
+    <ul>
+        <li th:each="review : ${paper.reviews}">
+            <!-- Display review details as needed -->
+            <p th:text="${review.author.username} + ': ' + ${review.content}"></p>
+        </li>
+    </ul>
+</div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<div th:if="${isReviewer}">
+    <label for="reviewText">Write a review here:</label>
+    <textarea id="reviewText" name="reviewText" rows="4" cols="50" th:data-paper-id="${paper.id}"></textarea>
+    <button onclick="submitReview()">Submit Review</button>
+</div>
+
+<script src="/js/paper.js"></script>
+
 </body>
 </html>

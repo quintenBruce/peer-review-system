@@ -17,23 +17,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Date;
 import java.util.Random;
 
 @Controller
 public class PaperController {
-    @GetMapping("/")
-    public ModelAndView index() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("index"); // This corresponds to the file name without the extension
-        return modelAndView;
-    }
     @GetMapping("/papers/{id}")
     public ModelAndView paperById(@PathVariable int id) {
         ModelAndView modelAndView = new ModelAndView();
         //byte[] pdfBytes = PDFService.toByteArray("src/main/java/com/example/PaperReview/Projects - Tagged.pdf");
-        Paper paper = PaperRepository.getPaper(id);
+        Paper paper = PaperRepository.getPaperById(id);
         modelAndView.addObject("paper", paper);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -54,7 +49,7 @@ public class PaperController {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = UserRepository.getUser(auth.getName());
-            Paper paper = PaperRepository.getPaper(id);
+            Paper paper = PaperRepository.getPaperById(id);
 
             if (user == null || paper == null) {
                 // User or paper not found, return failure status
@@ -70,6 +65,8 @@ public class PaperController {
 
             paper.setSentiments(sentimentAnalysis.getScore(), sentimentAnalysis.getMagnitude(), sentimentAnalysis.getLabel());
 
+            PaperRepository.removeAuthorizedReviewer(paper.getId(), user);
+
 
             // Review insertion successful, return success status
             return new ResponseEntity<>("Review inserted successfully", HttpStatus.CREATED);
@@ -77,5 +74,26 @@ public class PaperController {
             // An error occurred, return failure status
             return new ResponseEntity<>("Error inserting review", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/submit-paper")
+    public ModelAndView submitPaper() {
+        ModelAndView modelAndView = new ModelAndView();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        modelAndView.addObject("username", auth.getName());
+
+        modelAndView.setViewName("submit"); // This corresponds to the file name without the extension
+        return modelAndView;
+    }
+    @PostMapping("/submit-paper")
+    public ModelAndView postPaper() {
+        ModelAndView modelAndView = new ModelAndView();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        modelAndView.addObject("username", auth.getName());
+
+        modelAndView.setViewName("submit"); // This corresponds to the file name without the extension
+        return modelAndView;
     }
 }
