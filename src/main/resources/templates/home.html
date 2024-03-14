@@ -1,100 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PeerReviewPro - Home</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+        /* Add your custom styling here */
+        .section {
+            width: 30%; /* Adjust the width of each section as needed */
+            display: inline-block;
+            margin: 10px;
+            vertical-align: top;
         }
 
-        .footer {
-            background-color: #343a40;
+        .card {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .card img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Your global styles here */
+        h2 {
+            font-size: 24px; /* Adjust the font size as needed */
+            font-weight: bold;
+            color: black; /* Set the color to black */
+            text-decoration: none; /* Remove underline */
+        }
+
+        .card p {
+            font-size: 16px; /* Adjust the font size as needed */
+            font-weight: bold;
+            color: black; /* Set the color to black */
+        }
+
+        .submit-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff; /* Blue color */
             color: white;
-            text-align: center;
-            padding: 10px 0;
-            width: 100%;
-            position: fixed;
-            bottom: 0;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
-        .container-main {
-            flex: 1;
+        .submit-button:hover {
+            background-color: #0056b3; /* Darker shade of blue on hover */
         }
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">PeerReviewPro</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">About</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Contact</a>
-            </li>
-        </ul>
-    </div>
-</nav>
-
-<div class="container container-main mt-5">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">For Authors</h5>
-                    <p class="card-text">Submit your papers for review and feedback from peers.</p>
-                    <a href="submit_paper.html" class="btn btn-primary">Submit Paper</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">For Reviewers</h5>
-                    <p class="card-text">Review papers submitted by authors and provide feedback.</p>
-                    <a href="#" class="btn btn-primary">Review Papers</a>
-                </div>
-            </div>
+<div th:replace="header :: header" th:with="${username}"></div>
+<div class="section">
+    <h2>My Papers</h2>
+    <!-- Blue button to submit a paper -->
+    <a href="/submit-paper" class="submit-button">Submit a Paper</a>
+    <div th:if="${homeViewModel.userPapers.empty}">
+        <div class="card">
+            <p>No Papers to show...</p>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col">
-            <h2>Why Choose PeerReviewPro?</h2>
-            <p>PeerReviewPro offers a comprehensive peer review system that ensures quality and efficiency in the review process. Here's why you should choose us over the competition:</p>
-            <ul>
-                <li>Efficient and transparent review process</li>
-                <li>High-quality feedback from experienced reviewers</li>
-                <li>Easy submission and tracking of papers</li>
-                <li>Advanced analytics and insights</li>
-                <li>Competitive pricing and flexible plans</li>
-            </ul>
-            <p>Join PeerReviewPro today and experience the difference!</p>
-        </div>
+    <div th:each="paper : ${homeViewModel.userPapers}">
+        <a th:href="@{'/papers/' + ${paper.paperId}}">
+            <div class="card">
+                <!-- Display image of the first page of the PDF -->
+                <img th:if="${paper.imageData != null}" th:src="@{'data:image/png;base64,' + ${paper.imageData}}" alt="PDF Page"/>
+                <p th:if="${paper.label != null}" th:text="${paper.label}"></p>
+            </div>
+        </a>
     </div>
 </div>
 
-<footer class="footer">
-    <div class="container">
-        <span>&copy; 2024 PeerReviewPro. All rights reserved.</span>
-    </div>
-</footer>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<div class="section">
+    <h2>My Reviews</h2>
+    <div th:if="${homeViewModel.userReviews.empty}">
+        <div class="card">
+            <p>No Reviews to show...</p>
+        </div>
+    </div>
+    <div th:each="review : ${homeViewModel.userReviews}">
+        <a th:href="@{'/papers/' + ${review.paperId}}">
+            <div class="card">
+                <!-- Display image of the first page of the PDF -->
+                <p th:if="${review.reviewText != null}" th:text="'Review Text: ' + ${review.reviewText}"></p>
+                <p th:if="${review.label != null}" th:text="${review.label}"></p>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="section">
+    <h2>My Assigned Reviews</h2>
+    <div th:if="${homeViewModel.userAssignedReviews.empty}">
+        <div class="card">
+            <p>No Assigned Reviews</p>
+        </div>
+    </div>
+    <div th:each="assignedReview : ${homeViewModel.userAssignedReviews}">
+        <a th:href="@{'/papers/' + ${assignedReview.paperId}}">
+            <div class="card">
+                <!-- Display image of the first page of the PDF -->
+                <img th:if="${assignedReview.imageData != null}" th:src="@{'data:image/png;base64,' + ${assignedReview.imageData}}" alt="PDF Page"/>
+                <p th:if="${assignedReview.label != null}" th:text="${assignedReview.label}"></p>
+            </div>
+        </a>
+    </div>
+</div>
 </body>
 </html>
