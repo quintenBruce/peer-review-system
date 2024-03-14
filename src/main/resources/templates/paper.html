@@ -1,77 +1,137 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeerReviewPro</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 0px;
         }
 
         header {
-            background-color: #333;
+            background-color: #343a40;
             color: white;
             padding: 10px;
-            display: flex;
-            justify-content: space-between;
+
+            top: 0;
+            width: 100%;
+            z-index: 1000;
         }
 
-        .header-links {
-            display: flex;
-            align-items: center;
-        }
-
-        .header-link {
-            color: white;
-            text-decoration: none;
-            margin-left: 10px;
+        .container {
+            margin-top: 80px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .user-greeting {
             color: white;
         }
+
+        .paper-info {
+            margin-bottom: 20px;
+        }
+
+        .review-form {
+            margin-top: 20px;
+        }
+
+        .review-form textarea {
+            width: 100%;
+            height: 100px;
+            resize: none;
+        }
+
+        .review-form button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .review-list {
+            margin-top: 20px;
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .review-list li {
+            border-bottom: 1px solid #dee2e6;
+            padding: 10px 0;
+        }
     </style>
 </head>
 <body>
-<div th:replace="header :: header" th:with="${username}"></div>
+<header>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>PeerReviewPro</h3>
+            </div>
+            <div class="col text-right">
+                <span class="user-greeting">Hello, Maria Herrera!</span>
+                <a href="#" class="header-link">Logout</a>
+            </div>
+        </div>
+    </div>
+</header>
 
-<h1 th:text="'Title: ' + ${paper.title}"></h1>
-<p th:text="'Description: ' + ${paper.description}"></p>
-<p>
-    Authors:
-    <span th:each="author, iterStat : ${paper.authors}">
-        <span th:text="${author.username}"></span>
-        <span th:if="${!iterStat.last}">, </span>
-    </span>
-</p>
+<div class="container">
+    <div class="paper-info">
+        <h1>Title: <span th:text="${paper.title}"></span></h1>
+        <p>Description: <span th:text="${paper.description}"></span></p>
+        <p>Authors:
+            <span th:each="author, iterStat : ${paper.authors}">
+                <span th:text="${author.username}"></span>
+                <span th:if="${!iterStat.last}">, </span>
+            </span>
+        </p>
+    </div>
 
-<embed th:src="@{'/pdf/view/' + ${paper.id}}" type="application/pdf" width="100%" height="600px"/>
+    <div class="pdf-viewer">
+        <embed th:src="@{'/pdf/view/' + ${paper.id}}" type="application/pdf" width="100%" height="600px"/>
+    </div>
 
-<div>
-    <h2>Review Sentiment Details</h2>
-    <p th:text="'Sentiment Label: ' + ${paper.sentimentLabel}"></p>
-    <p th:text="'Sentiment Score: ' + ${paper.sentimentScore}"></p>
-    <p th:text="'Sentiment Magnitude: ' + ${paper.sentimentMagnitude}"></p>
+    <div class="review-info">
+        <h2>Review Sentiment Details</h2>
+        <p>Sentiment Label: <span th:text="${paper.sentimentLabel}"></span></p>
+        <p>Sentiment Score: <span th:text="${paper.sentimentScore}"></span></p>
+        <p>Sentiment Magnitude: <span th:text="${paper.sentimentMagnitude}"></span></p>
+    </div>
+
+    <div class="review-form">
+        <h2>Write a review</h2>
+        <form th:if="${isReviewer}" id="reviewForm">
+            <div class="form-group">
+                <label for="reviewText">Review:</label>
+                <textarea class="form-control" id="reviewText" name="reviewText" rows="4" th:data-paper-id="${paper.id}"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Review</button>
+        </form>
+    </div>
+
+    <div class="review-list">
+        <h2>Reviews</h2>
+        <ul>
+            <li th:each="review : ${paper.reviews}">
+                <p><strong th:text="${review.author.username}"></strong>: <span th:text="${review.content}"></span></p>
+            </li>
+        </ul>
+    </div>
 </div>
 
-<!-- Display Reviews -->
-<div th:if="${not #lists.isEmpty(paper.reviews)}">
-    <h2>Reviews</h2>
-    <ul>
-        <li th:each="review : ${paper.reviews}">
-            <!-- Display review details as needed -->
-            <p th:text="${review.author.username} + ': ' + ${review.content}"></p>
-        </li>
-    </ul>
-</div>
-
-<div th:if="${isReviewer}">
-    <label for="reviewText">Write a review here:</label>
-    <textarea id="reviewText" name="reviewText" rows="4" cols="50" th:data-paper-id="${paper.id}"></textarea>
-    <button onclick="submitReview()">Submit Review</button>
-</div>
-
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="/js/paper.js"></script>
-
 </body>
 </html>
-
