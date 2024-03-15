@@ -4,9 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -23,12 +21,12 @@ public class Paper {
     private ReviewType reviewType;
     private Set<Review> reviews = new HashSet<>();
     private Set<User> Authors = new HashSet<>();
-    private Set<Category> categories = new HashSet<>();
+    private List<String> categories = new ArrayList<>();
     private Set<User> authorizedReviewers = new HashSet<>();
     private boolean isPublished;
 
     // Constructors, getters, setters, and other methods
-    public Paper(int id, byte[] content, Set<User> Authors, Set<Review> reviews, Set<Category> categories) {
+    public Paper(int id, byte[] content, Set<User> Authors, Set<Review> reviews, List<String> categories) {
         this.id = id;
         this.content = content;
         this.Authors = Authors;

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -44,6 +43,16 @@
         <span th:if="${!iterStat.last}">, </span>
     </span>
 </p>
+
+<!-- Display Categories -->
+<div>
+    <h2>Categories</h2>
+    <ul>
+        <li th:each="category : ${paper.categories}">
+            <span th:text="${category}"></span>
+        </li>
+    </ul>
+</div>
 
 <embed th:src="@{'/pdf/view/' + ${paper.id}}" type="application/pdf" width="100%" height="600px"/>
 

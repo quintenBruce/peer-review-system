@@ -6,15 +6,14 @@ import com.example.PaperReview.models.Review;
 import com.example.PaperReview.models.User;
 import com.example.PaperReview.repositories.PaperRepository;
 import com.example.PaperReview.repositories.UserRepository;
+import com.example.PaperReview.services.GoogleNLPService;
 import com.example.PaperReview.services.PDFService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
 @ComponentScan("com.example.PaperReview")
@@ -28,6 +27,7 @@ public class PaperReviewApplication {
 		UserRepository.putUser(userAuthor);
 
 		//create 2 papers with the same aurthor and same authorized reviewer
+
 		PaperRepository.putPaper(createTestPaper(userAuthor, userReviewer));
 		PaperRepository.putPaper(createTestPaper2(userAuthor, userReviewer));
 		//user2 will have 2 papers. user1 will have 2 papers to review
@@ -83,7 +83,7 @@ public class PaperReviewApplication {
 		//authorized reviewers
 		paper.getAuthorizedReviewers().add(authorizedReviewer);
 		//categories
-		Set<Category> categories = new HashSet<>();
+		List<String> categories = GoogleNLPService.classifyText(PDFService.extractText(paper.getContent()));
 		paper.setCategories(categories);
 
 		return paper;
@@ -138,10 +138,8 @@ public class PaperReviewApplication {
 
 		//authorized reviewers
 		paper.getAuthorizedReviewers().add(authorizedReviewer);
-		//categories
-		Set<Category> categories = new HashSet<>();
+		List<String> categories = GoogleNLPService.classifyText(PDFService.extractText(paper.getContent()));
 		paper.setCategories(categories);
-
 		return paper;
 	}
 }

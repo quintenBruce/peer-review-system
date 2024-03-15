@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 
 @Service
@@ -27,9 +25,15 @@ public class PDFService {
             return "";
         }
     }
-//    public static String extractText(byte[] blob) {
-//
-//    }
+    public static String extractText(byte[] blob) {
+        try (InputStream inputStream = new ByteArrayInputStream(blob)) {
+            PDDocument doc = PDDocument.load(inputStream);
+            return new PDFTextStripper().getText(doc);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
     public static byte[] toByteArray(String path) {
         try (PDDocument document = PDDocument.load(new File(path))) {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

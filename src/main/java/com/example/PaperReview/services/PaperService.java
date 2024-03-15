@@ -42,6 +42,8 @@ public class PaperService {
 
     public static boolean PutPaper(Paper paper) {
         //run categorization service
+        List<String> categories = GoogleNLPService.classifyText(PDFService.extractText(paper.getContent()));
+        paper.setCategories(categories);
         PaperRepository.putPaper(paper);
         return true;
     }
