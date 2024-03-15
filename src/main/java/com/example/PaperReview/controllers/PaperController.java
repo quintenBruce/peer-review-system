@@ -84,7 +84,7 @@ public class PaperController {
 
         modelAndView.addObject("username", auth.getName());
 
-        modelAndView.setViewName("submit"); // This corresponds to the file name without the extension
+        modelAndView.setViewName("submit-paper"); // This corresponds to the file name without the extension
         return modelAndView;
     }
 
