@@ -39,4 +39,10 @@ public class PaperService {
 
 
     }
+
+    public static boolean PutPaper(Paper paper) {
+        //run categorization service
+        PaperRepository.putPaper(paper);
+        return true;
+    }
 }

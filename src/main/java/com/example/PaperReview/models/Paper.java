@@ -37,6 +37,14 @@ public class Paper {
         // Initialize other fields as needed...
     }
 
+    public Paper(byte[] content, Set<User> authors, String title, Date date, String description) {
+        this.content = content;
+        this.Authors = authors;
+        this.title = title;
+        this.creationDate = date;
+        this.description = description;
+    }
+
     public Paper(int id, byte[] content) {
         this.id = id;
         this.content = content;

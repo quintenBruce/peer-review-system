@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -60,24 +60,25 @@
 
 <div class="container mt-5">
     <h1>Submit Your Paper</h1>
-    <form>
+    <form id="paperForm" enctype="multipart/form-data">
         <div class="form-group">
             <label for="paperTitle">Title</label>
-            <input type="text" class="form-control" id="paperTitle" placeholder="Enter title">
+            <input type="text" class="form-control" id="paperTitle" name="title" placeholder="Enter title">
         </div>
         <div class="form-group">
             <label for="paperAuthors">Authors</label>
-            <input type="text" class="form-control" id="paperAuthors" placeholder="Enter authors">
+            <input type="text" class="form-control" id="paperAuthors" name="authors" placeholder="Enter authors" th:value="${username}">
         </div>
+
         <div class="form-group">
             <label for="paperAbstract">Abstract</label>
-            <textarea class="form-control" id="paperAbstract" rows="3" placeholder="Enter abstract"></textarea>
+            <textarea class="form-control" id="paperAbstract" name="abstract" rows="3" placeholder="Enter abstract"></textarea>
         </div>
         <div class="form-group">
             <label for="paperFile">Upload File</label>
-            <input type="file" class="form-control-file" id="paperFile">
+            <input type="file" class="form-control-file" id="paperFile" name="pdfFile">
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
     </form>
 </div>
 
@@ -90,5 +91,35 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    var form = document.getElementById("paperForm");
+    console.log("Form:", form); // Debugging statement
+
+    form.addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        var formData = new FormData(form);
+        console.log("FormData:", formData); // Debugging statement
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/submit-paper", true);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                alert("Paper submitted successfully");
+                // Redirect to another page if needed
+            } else {
+                alert("Failed to submit paper. Error: " + xhr.statusText);
+            }
+        };
+        xhr.onerror = function() {
+            alert("Network error occurred");
+        };
+        xhr.send(formData);
+    });
+});
+
+</script>
 </body>
 </html>

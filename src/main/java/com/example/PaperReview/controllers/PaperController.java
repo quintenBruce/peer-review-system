@@ -16,11 +16,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import java.util.Date;
-import java.util.Random;
+import java.io.IOException;
+import java.util.*;
 
 @Controller
 public class PaperController {
@@ -86,14 +87,31 @@ public class PaperController {
         modelAndView.setViewName("submit"); // This corresponds to the file name without the extension
         return modelAndView;
     }
+
     @PostMapping("/submit-paper")
-    public ModelAndView postPaper() {
-        ModelAndView modelAndView = new ModelAndView();
+    public ResponseEntity<String> postPaper(
+            @RequestParam("title") String title,
+            @RequestParam("authors") List<String> authors,
+            @RequestParam("pdfFile") MultipartFile pdfFile,
+            @RequestParam(value = "abstract", required = false) String paperAbstract
+    ) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        byte[] content = new byte[0];
+        try {
+            content = pdfFile.getBytes();
+        } catch (IOException e) {
+            return new ResponseEntity<>("Failed to read file content", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
-        modelAndView.addObject("username", auth.getName());
+        List<User> _authors = UserRepository.getUsers(authors);
+        Paper paper = new Paper(content, new HashSet<>(_authors), title, new Date(), paperAbstract);
+        boolean status = PaperService.PutPaper(paper);
 
-        modelAndView.setViewName("submit"); // This corresponds to the file name without the extension
-        return modelAndView;
+        if (status) {
+            return new ResponseEntity<>("Paper submitted successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Failed to submit paper", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

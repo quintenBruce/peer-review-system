@@ -39,10 +39,6 @@ public class PaperReviewApplication {
 
 	private static Paper createTestPaper(User author, User authorizedReviewer) {
 		Paper paper = new Paper();
-
-		//id
-		paper.setId(1);
-
 		//pdf content
 		paper.setContent(PDFService.toByteArray("src/main/java/com/example/PaperReview/Projects - Tagged.pdf")); // Replace with actual content
 
@@ -95,9 +91,6 @@ public class PaperReviewApplication {
 
 	private static Paper createTestPaper2(User author, User authorizedReviewer) {
 		Paper paper = new Paper();
-
-		//id
-		paper.setId(2);
 
 		//pdf content
 		paper.setContent(PDFService.toByteArray("src/main/java/com/example/PaperReview/haskellPaper.pdf"));
