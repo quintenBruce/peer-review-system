@@ -48,6 +48,16 @@ public class PaperController {
     @PostMapping("/papers/{id}/reviews")
     public ResponseEntity<String> paperById(@PathVariable int id, @RequestParam String content) {
         try {
+            List<String> moderationCategories = GoogleNLPService.moderateText(content);
+            if (!moderationCategories.isEmpty()) {
+                String rejectionResponse = "Review rejected for reason(s): ";
+                for (String reason : moderationCategories) {
+                    rejectionResponse = rejectionResponse.concat(reason + ", ");
+                }
+                rejectionResponse = rejectionResponse.substring(0, rejectionResponse.length() - 2); // Remove the trailing comma and space
+                return new ResponseEntity<>(rejectionResponse, HttpStatus.BAD_REQUEST);
+            }
+
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = UserRepository.getUser(auth.getName());
             Paper paper = PaperRepository.getPaperById(id);

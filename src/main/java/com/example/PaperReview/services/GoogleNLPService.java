@@ -5,6 +5,7 @@ import com.example.PaperReview.models.SentimentAnalysis;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -126,5 +127,64 @@ public class GoogleNLPService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static List<String> moderateText(String text) {
+        OkHttpClient client = new OkHttpClient();
+
+        // Specify the URL you want to send the request to
+        String url = "";
+
+        if (url.isEmpty() || url.isBlank() || url.equals("")) {
+            List<String> defaultList = new ArrayList<>();
+            return defaultList;
+        }
+
+        org.json.JSONObject document = new org.json.JSONObject();
+        document.put("type", "PLAIN_TEXT");
+        document.put("content", text);
+
+        org.json.JSONObject requestBody = new org.json.JSONObject();
+        requestBody.put("document", document);
+
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create(MediaType.parse("application/json"), String.valueOf(requestBody)))
+                .build();
+
+        // Execute the request and get the response
+        Response response = null;
+        try {
+            response = client.newCall(request).execute();
+            String responseBody = response.body().string();
+
+            return extractModerationCategories(responseBody);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private static List<String> extractModerationCategories(String responseBody) {
+        List<String> categories = new ArrayList<>();
+        JSONObject jsonObject = new JSONObject(responseBody);
+        JSONArray moderationCategories = jsonObject.getJSONArray("moderationCategories");
+
+        for (int i = 0; i < moderationCategories.length(); i++) {
+            JSONObject categoryObject = moderationCategories.getJSONObject(i);
+            double confidence = categoryObject.getDouble("confidence");
+            if (confidence > 0.25) {
+                String name = categoryObject.getString("name");
+                if (!name.equals("Legal") && !name.equals("Politics") && !name.equals("Finance") &&
+                        !name.equals("War & Conflict") && !name.equals("Illicit Drugs") &&
+                        !name.equals("Religion & Belief") && !name.equals("Health") &&
+                        !name.equals("Public Safety") && !name.equals("Firearms & Weapons")) {
+                    categories.add(name);
+                }
+            }
+        }
+
+        return categories;
     }
 }
