@@ -13,7 +13,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 public class HomeController {
-    @GetMapping("/home")
+    @GetMapping("/dashboard")
     public ModelAndView index() {
         ModelAndView modelAndView = new ModelAndView();
 
@@ -25,7 +25,7 @@ public class HomeController {
 
         modelAndView.addObject("homeViewModel", viewModel);
         modelAndView.addObject("username", user.getUsername());
-        modelAndView.setViewName("home"); // This corresponds to the file name without the extension
+        modelAndView.setViewName("dashboard"); // This corresponds to the file name without the extension
         return modelAndView;
     }
 
