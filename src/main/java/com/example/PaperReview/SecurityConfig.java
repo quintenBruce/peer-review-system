@@ -71,6 +71,13 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 ).headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .httpBasic(Customizer.withDefaults())
+                .formLogin(Customizer.withDefaults()
+                )
+                .logout((logout) ->
+                        logout.deleteCookies("remove")
+                                .invalidateHttpSession(false)
+                                .logoutSuccessUrl("/login")
+                )
                 .formLogin((login) -> login
                         .loginPage("/login")
                         .defaultSuccessUrl("/dashboard", true)
