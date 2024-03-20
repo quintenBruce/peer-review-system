@@ -1,14 +1,17 @@
 package com.example.PaperReview.services;
 
+import com.example.PaperReview.models.Organization;
 import com.example.PaperReview.models.Paper;
 import com.example.PaperReview.models.Review;
 import com.example.PaperReview.models.User;
 import com.example.PaperReview.repositories.PaperRepository;
+import com.example.PaperReview.repositories.UserRepository;
 import com.example.PaperReview.viewModels.HomeViewModel;
 import com.example.PaperReview.viewModels.PaperCard;
 import com.example.PaperReview.viewModels.ReviewCard;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PaperService {
@@ -47,4 +50,23 @@ public class PaperService {
         PaperRepository.putPaper(paper);
         return true;
     }
+
+    public static List<String> AssignReviewers(User author, Paper paper) {
+        List<User> usersInOrg = UserRepository.getUsersByOrganization(author.getOrganization());
+        usersInOrg.removeIf(user -> user.equals(author));
+
+        Collections.shuffle(usersInOrg);
+
+        int numReviewers = Math.min(2, usersInOrg.size());
+
+        List<User> selectedUsers = usersInOrg.subList(0, numReviewers);
+        List<String> res = new ArrayList<>();
+
+        for (User user : selectedUsers) {
+            PaperRepository.addAuthorizedReviewer(paper.getId(), user);
+            res.add(user.getUsername());
+        }
+        return res;
+    }
+
 }

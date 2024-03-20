@@ -90,4 +90,12 @@ public class PaperRepository {
         return reviewsContent;
     }
 
+    public static void addAuthorizedReviewer(int paperId, User reviewer) {
+        Paper paper = getPaperById(paperId);
+        if (paper != null) {
+            paper.getAuthorizedReviewers().add(reviewer);
+            papers.set(papers.indexOf(paper), paper);
+        }
+    }
+
 }

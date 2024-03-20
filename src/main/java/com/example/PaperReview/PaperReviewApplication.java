@@ -1,9 +1,7 @@
 package com.example.PaperReview;
 
-import com.example.PaperReview.models.Category;
-import com.example.PaperReview.models.Paper;
-import com.example.PaperReview.models.Review;
-import com.example.PaperReview.models.User;
+import com.example.PaperReview.models.*;
+import com.example.PaperReview.repositories.OrganizationRepository;
 import com.example.PaperReview.repositories.PaperRepository;
 import com.example.PaperReview.repositories.UserRepository;
 import com.example.PaperReview.services.GoogleNLPService;
@@ -23,6 +21,10 @@ public class PaperReviewApplication {
 	public static User userAuthor = new User("user2");
 
 	public static void main(String[] args) {
+		Organization organization = new Organization("Texas Tech");
+		OrganizationRepository.save(organization);
+		userAuthor.setOrganization(organization);
+		userReviewer.setOrganization(organization);
 		UserRepository.putUser(userReviewer);
 		UserRepository.putUser(userAuthor);
 

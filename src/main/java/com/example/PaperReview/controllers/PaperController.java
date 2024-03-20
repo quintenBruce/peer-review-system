@@ -107,6 +107,7 @@ public class PaperController {
     ) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
+        User user = UserRepository.getUser(username);
         byte[] content = new byte[0];
         try {
             content = pdfFile.getBytes();
@@ -118,7 +119,9 @@ public class PaperController {
         Paper paper = new Paper(content, new HashSet<>(_authors), title, new Date(), paperAbstract);
         boolean status = PaperService.PutPaper(paper);
 
+
         if (status) {
+            List<String> assignedUsernames = PaperService.AssignReviewers(user, paper);
             return new ResponseEntity<>("Paper submitted successfully", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Failed to submit paper", HttpStatus.INTERNAL_SERVER_ERROR);

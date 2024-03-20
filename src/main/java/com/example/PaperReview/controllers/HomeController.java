@@ -19,6 +19,7 @@ public class HomeController {
 
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String usern = auth.getName();
         User user = UserRepository.getUser(auth.getName());
 
         HomeViewModel viewModel = PaperService.generateHomeViewModel(user);

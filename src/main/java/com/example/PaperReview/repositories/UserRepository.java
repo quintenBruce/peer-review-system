@@ -1,5 +1,6 @@
     package com.example.PaperReview.repositories;
 
+    import com.example.PaperReview.models.Organization;
     import com.example.PaperReview.models.User;
 
     import java.util.ArrayList;
@@ -39,6 +40,15 @@
                 }
             }
             return userList;
+        }
+        public static List<User> getUsersByOrganization(Organization organization) {
+            List<User> usersInOrganization = new ArrayList<>();
+            for (User user : userMap.values()) {
+                if (user.getOrganization() != null && user.getOrganization().equals(organization)) {
+                    usersInOrganization.add(user);
+                }
+            }
+            return usersInOrganization;
         }
 
 
