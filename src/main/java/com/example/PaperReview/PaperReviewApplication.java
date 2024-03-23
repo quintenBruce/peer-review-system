@@ -6,6 +6,7 @@ import com.example.PaperReview.repositories.PaperRepository;
 import com.example.PaperReview.repositories.UserRepository;
 import com.example.PaperReview.services.GoogleNLPService;
 import com.example.PaperReview.services.PDFService;
+import com.example.PaperReview.services.UserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -20,23 +21,27 @@ public class PaperReviewApplication {
 	public static User userReviewer = new User("user1");
 	public static User userAuthor = new User("user2");
 
+
 	public static void main(String[] args) {
+
+		UserService userService = SpringApplication.run(PaperReviewApplication.class, args).getBean(UserService.class);
+
 		Organization organization = new Organization("Texas Tech");
 		OrganizationRepository.save(organization);
+
+		User userAuthor = new User("user2");
+		User userReviewer = new User("user1");
 		userAuthor.setOrganization(organization);
 		userReviewer.setOrganization(organization);
-		UserRepository.putUser(userReviewer);
-		UserRepository.putUser(userAuthor);
 
-		//create 2 papers with the same aurthor and same authorized reviewer
+		userService.putUser(userReviewer, "password");
+		userService.putUser(userAuthor, "password");
 
-		PaperRepository.putPaper(createTestPaper(userAuthor, userReviewer));
-		PaperRepository.putPaper(createTestPaper2(userAuthor, userReviewer));
-		//user2 will have 2 papers. user1 will have 2 papers to review
+		Paper paper1 = createTestPaper(userAuthor, userReviewer);
+		Paper paper2 = createTestPaper2(userAuthor, userReviewer);
 
-
-
-		SpringApplication.run(PaperReviewApplication.class, args);
+		PaperRepository.putPaper(paper1);
+		PaperRepository.putPaper(paper2);
 	}
 
 	private static Paper createTestPaper(User author, User authorizedReviewer) {

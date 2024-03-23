@@ -62,12 +62,19 @@ public class SecurityConfig {
 //
 //    @Autowired
 //    private DataSource dataSource;
+@Bean
+public PasswordEncoder passwordEncoder() {
+    // Define your password encoder
+    return new BCryptPasswordEncoder();
+}
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/signup")).permitAll()
                         .anyRequest().authenticated()
                 ).headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .httpBasic(Customizer.withDefaults())
@@ -97,28 +104,31 @@ DataSource dataSource() {
 
     @Bean
     UserDetailsManager users(DataSource dataSource) {
-        UserDetails user = User.builder()
-                .username("user1")
-                .password("{bcrypt}$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmNSJZ.0FxO/BTk76klW")
-                .roles("USER")
-                .build();
+//        UserDetails user = User.builder()
+//                .username("user1")
+//                .passwordEncoder(passwordEncoder()::encode)
+//                .password("password")
+//                .roles("USER")
+//                .build();
 
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password("{bcrypt}$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmNSJZ.0FxO/BTk76klW")
-                .roles("USER", "ADMIN")
-                .build();
-
-        UserDetails testUser = User.builder()
-                .username("user2")
-                .password("{bcrypt}$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmNSJZ.0FxO/BTk76klW")
-                .roles("USER")
-                .build();
+//        UserDetails admin = User.builder()
+//                .username("admin")
+//                .passwordEncoder(passwordEncoder()::encode)
+//                .password("password")
+//                .roles("USER")
+//                .build();
+//
+//        UserDetails testUser = User.builder()
+//                .username("user2")
+//                .passwordEncoder(passwordEncoder()::encode)
+//                .password("password")
+//                .roles("USER")
+//                .build();
 
         JdbcUserDetailsManager users = new JdbcUserDetailsManager(dataSource);
-        users.createUser(user);
-        users.createUser(admin);
-        users.createUser(testUser); // Add the third test user
+////        users.createUser(user);
+//        users.createUser(admin);
+//        users.createUser(testUser); // Add the third test user
         return users;
     }
 }

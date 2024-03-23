@@ -24,6 +24,11 @@ public class OrganizationRepository {
         return null; // or throw an exception if not found
     }
 
+    public static boolean exists(String name) {
+        return organizations.stream()
+                .anyMatch(org -> org.getName().equals(name));
+    }
+
     public static Organization findByName(String name) {
         Optional<Organization> optionalOrganization = organizations.stream()
                 .filter(org -> org.getName().equals(name))

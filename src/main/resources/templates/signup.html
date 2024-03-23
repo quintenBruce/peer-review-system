@@ -30,7 +30,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">PeerReviewPro</a>
+    <a class="navbar-brand" href="/">PeerReviewPro</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -51,7 +51,7 @@
 
 <div class="container mt-5">
     <h2>Sign Up for PeerReviewPro</h2>
-    <form>
+    <form id="signupForm">
         <div class="form-group">
             <label for="username">Username</label>
             <input type="text" class="form-control" id="username" placeholder="Enter username">
@@ -59,6 +59,10 @@
         <div class="form-group">
             <label for="email">Email</label>
             <input type="email" class="form-control" id="email" placeholder="Enter email">
+        </div>
+        <div class="form-group">
+            <label for="organization">Organization</label>
+            <input type="organization" class="form-control" id="organization" placeholder="Enter Organization">
         </div>
         <div class="form-group">
             <label for="password">Password</label>
@@ -81,5 +85,40 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    document.getElementById('signupForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        var formData = {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value,
+            email: document.getElementById('email').value,
+            organization: document.getElementById('organization').value
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/signup', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                alert('Sign up successful: ' + xhr.responseText);
+                window.location.href = '/login'; // Redirect to login page
+            } else {
+                alert('Failed to sign up: ' + xhr.responseText);
+            }
+        };
+
+        xhr.onerror = function () {
+            alert('Error: Request failed');
+        };
+
+        xhr.send(JSON.stringify(formData));
+    });
+
+</script>
+
+
 </body>
 </html>
