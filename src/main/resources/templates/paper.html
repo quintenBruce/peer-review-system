@@ -39,7 +39,9 @@
 <p>
     Authors:
     <span th:each="author, iterStat : ${paper.authors}">
-        <span th:text="${author.username}"></span>
+<!--        <span th:text="${author.username}"></span>-->
+
+        <span th:text="@{'********'}"></span>
         <span th:if="${!iterStat.last}">, </span>
     </span>
 </p>
@@ -69,7 +71,10 @@
     <ul>
         <li th:each="review : ${paper.reviews}">
             <!-- Display review details as needed -->
-            <p th:text="${review.author.username} + ': ' + ${review.content}"></p>
+<!--            <p th:text="${review.author.username} + ': ' + ${review.content}"></p>-->
+
+            <p th:text="'********: ' + ${review.content}"></p>
+
         </li>
     </ul>
 </div>
