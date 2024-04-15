@@ -17,7 +17,7 @@ public class GoogleNLPService {
         OkHttpClient client = new OkHttpClient();
 
         // Specify the URL you want to send the request to
-        String url = "";
+        String url = "https://language.googleapis.com/v2/documents:analyzeSentiment?key=AIzaSyA9C6lQ1iSAs8Vc-y-AxnLsOr86zgR94QY";
 
         if (url.isEmpty() || url.isBlank() || url.equals("")) {
             return new SentimentAnalysis(0d, 0d, "test label");
@@ -68,7 +68,7 @@ public class GoogleNLPService {
         OkHttpClient client = new OkHttpClient();
 
         // Specify the URL you want to send the request to
-        String url = "";
+        String url = "https://language.googleapis.com/v2/documents:classifyText?key=AIzaSyA9C6lQ1iSAs8Vc-y-AxnLsOr86zgR94QY";
 
         if (url.isEmpty() || url.isBlank() || url.equals("")) {
             List<String> defaultList = new ArrayList<>();
@@ -133,7 +133,7 @@ public class GoogleNLPService {
         OkHttpClient client = new OkHttpClient();
 
         // Specify the URL you want to send the request to
-        String url = "";
+        String url = "https://language.googleapis.com/v2/documents:moderateText?key=AIzaSyA9C6lQ1iSAs8Vc-y-AxnLsOr86zgR94QY";
 
         if (url.isEmpty() || url.isBlank() || url.equals("")) {
             List<String> defaultList = new ArrayList<>();
