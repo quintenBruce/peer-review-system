@@ -1,46 +1,67 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         /* Add your custom styling here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
         .section {
-            width: 30%; /* Adjust the width of each section as needed */
-            display: inline-block;
+            flex: 0 1 30%;
             margin: 10px;
-            vertical-align: top;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .section h2 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
         }
 
         .card {
             border: 1px solid #ddd;
             padding: 10px;
             margin-bottom: 10px;
-        }
-
-        .card img {
-            max-width: 100%;
-            height: auto;
-        }
-
-        /* Your global styles here */
-        h2 {
-            font-size: 24px; /* Adjust the font size as needed */
-            font-weight: bold;
-            color: black; /* Set the color to black */
-            text-decoration: none; /* Remove underline */
+            background-color: #fff;
         }
 
         .card p {
-            font-size: 16px; /* Adjust the font size as needed */
-            font-weight: bold;
-            color: black; /* Set the color to black */
+            font-size: 16px;
+            color: #333;
+            margin: 0;
         }
 
         .submit-button {
             display: inline-block;
             padding: 10px 20px;
-            background-color: #007bff; /* Blue color */
+            background-color: #007bff;
             color: white;
             text-decoration: none;
             border: none;
@@ -48,68 +69,101 @@
             cursor: pointer;
         }
 
-        .submit-button:hover {
-            background-color: #0056b3; /* Darker shade of blue on hover */
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-<div th:replace="header :: header" th:with="${username}"></div>
-<div class="section">
-    <h2>My Papers</h2>
-    <!-- Blue button to submit a paper -->
-    <a href="/submit-paper" class="submit-button">Submit a Paper</a>
-    <div th:if="${homeViewModel.userPapers.empty}">
-        <div class="card">
-            <p>No Papers to show...</p>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">PeerReviewPro</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Contact</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="section">
+        <h2>My Papers</h2>
+        <a href="/submit-paper" class="submit-button">Submit a Paper</a>
+        <div th:if="${homeViewModel.userPapers.empty}">
+            <div class="card">
+                <p>No Papers to show...</p>
+            </div>
+        </div>
+        <div th:each="paper : ${homeViewModel.userPapers}">
+            <a th:href="@{'/papers/' + ${paper.paperId}}">
+                <div class="card">
+                    <img th:if="${paper.imageData != null}" th:src="@{'data:image/png;base64,' + ${paper.imageData}}" alt="PDF Page"/>
+                    <p th:if="${paper.label != null}" th:text="${paper.label}"></p>
+                </div>
+            </a>
         </div>
     </div>
-    <div th:each="paper : ${homeViewModel.userPapers}">
-        <a th:href="@{'/papers/' + ${paper.paperId}}">
+
+    <div class="section">
+        <h2>My Reviews</h2>
+        <div th:if="${homeViewModel.userReviews.empty}">
             <div class="card">
-                <!-- Display image of the first page of the PDF -->
-                <img th:if="${paper.imageData != null}" th:src="@{'data:image/png;base64,' + ${paper.imageData}}" alt="PDF Page"/>
-                <p th:if="${paper.label != null}" th:text="${paper.label}"></p>
+                <p>No Reviews to show...</p>
             </div>
-        </a>
+        </div>
+        <div th:each="review : ${homeViewModel.userReviews}">
+            <a th:href="@{'/papers/' + ${review.paperId}}">
+                <div class="card">
+                    <p th:if="${review.reviewText != null}" th:text="'Review Text: ' + ${review.reviewText}"></p>
+                    <p th:if="${review.label != null}" th:text="${review.label}"></p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>My Assigned Reviews</h2>
+        <div th:if="${homeViewModel.userAssignedReviews.empty}">
+            <div class="card">
+                <p>No Assigned Reviews</p>
+            </div>
+        </div>
+        <div th:each="assignedReview : ${homeViewModel.userAssignedReviews}">
+            <a th:href="@{'/papers/' + ${assignedReview.paperId}}">
+                <div class="card">
+                    <img th:if="${assignedReview.imageData != null}" th:src="@{'data:image/png;base64,' + ${assignedReview.imageData}}" alt="PDF Page"/>
+                    <p th:if="${assignedReview.label != null}" th:text="${assignedReview.label}"></p>
+                </div>
+            </a>
+        </div>
     </div>
 </div>
 
+<footer class="footer">
+    <div class="container">
+        <span>&copy; 2024 PeerReviewPro. All rights reserved.</span>
+    </div>
+</footer>
 
-<div class="section">
-    <h2>My Reviews</h2>
-    <div th:if="${homeViewModel.userReviews.empty}">
-        <div class="card">
-            <p>No Reviews to show...</p>
-        </div>
-    </div>
-    <div th:each="review : ${homeViewModel.userReviews}">
-        <a th:href="@{'/papers/' + ${review.paperId}}">
-            <div class="card">
-                <!-- Display image of the first page of the PDF -->
-                <p th:if="${review.reviewText != null}" th:text="'Review Text: ' + ${review.reviewText}"></p>
-                <p th:if="${review.label != null}" th:text="${review.label}"></p>
-            </div>
-        </a>
-    </div>
-</div>
-
-<div class="section">
-    <h2>My Assigned Reviews</h2>
-    <div th:if="${homeViewModel.userAssignedReviews.empty}">
-        <div class="card">
-            <p>No Assigned Reviews</p>
-        </div>
-    </div>
-    <div th:each="assignedReview : ${homeViewModel.userAssignedReviews}">
-        <a th:href="@{'/papers/' + ${assignedReview.paperId}}">
-            <div class="card">
-                <!-- Display image of the first page of the PDF -->
-                <img th:if="${assignedReview.imageData != null}" th:src="@{'data:image/png;base64,' + ${assignedReview.imageData}}" alt="PDF Page"/>
-                <p th:if="${assignedReview.label != null}" th:text="${assignedReview.label}"></p>
-            </div>
-        </a>
-    </div>
-</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
