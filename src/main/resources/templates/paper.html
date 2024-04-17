@@ -1,91 +1,153 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
+            padding-bottom: 50px; /* Ensure footer doesn't overlap content */
         }
 
-        header {
+        .content {
+            padding: 20px;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        h2 {
+            margin-top: 20px;
+            margin-bottom: 5px; /* Reduce space between sections */
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0; /* Remove default margin */
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        embed {
+            width: 100%;
+            height: 600px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
             background-color: #333;
             color: white;
             padding: 10px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .header-links {
-            display: flex;
-            align-items: center;
-        }
-
-        .header-link {
-            color: white;
-            text-decoration: none;
-            margin-left: 10px;
-        }
-
-        .user-greeting {
-            color: white;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-<div th:replace="header :: header" th:with="${username}"></div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">PeerReviewPro</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Contact</a>
+            </li>
+        </ul>
+    </div>
+</nav>
 
-<h1 th:text="'Title: ' + ${paper.title}"></h1>
-<p th:text="'Description: ' + ${paper.description}"></p>
-<p>
-    Authors:
-    <span th:each="author, iterStat : ${paper.authors}">
-<!--        <span th:text="${author.username}"></span>-->
+<div class="content">
+    <h1 th:text="'Title: ' + ${paper.title}"></h1>
+    <p th:text="'Description: ' + ${paper.description}"></p>
+    <p>
+        Authors:
+        <span th:each="author, iterStat : ${paper.authors}">
+            <span th:text="@{'********'}"></span>
+            <span th:if="${!iterStat.last}">, </span>
+        </span>
+    </p>
 
-        <span th:text="@{'********'}"></span>
-        <span th:if="${!iterStat.last}">, </span>
-    </span>
-</p>
+    <!-- Display Categories -->
+    <div>
+        <h2>Categories</h2>
+        <ul>
+            <li th:each="category : ${paper.categories}">
+                <span th:text="${category}"></span>
+            </li>
+        </ul>
+    </div>
 
-<!-- Display Categories -->
-<div>
-    <h2>Categories</h2>
-    <ul>
-        <li th:each="category : ${paper.categories}">
-            <span th:text="${category}"></span>
-        </li>
-    </ul>
+    <div style="margin-top: 20px;"> <!-- Reduce space between categories and sentiment details -->
+        <h2>Review Sentiment Details</h2>
+        <p th:text="'Sentiment Label: ' + ${paper.sentimentLabel}"></p>
+        <p th:text="'Sentiment Score: ' + ${paper.sentimentScore}"></p>
+        <p th:text="'Sentiment Magnitude: ' + ${paper.sentimentMagnitude}"></p>
+    </div>
+
+    <!-- Display Reviews -->
+    <div th:if="${not #lists.isEmpty(paper.reviews)}">
+        <h2>Reviews</h2>
+        <ul>
+            <li th:each="review : ${paper.reviews}">
+                <p th:text="'********: ' + ${review.content}"></p>
+            </li>
+        </ul>
+    </div>
+
+    <div th:if="${isReviewer}">
+        <label for="reviewText">Write a review here:</label>
+        <textarea id="reviewText" name="reviewText" rows="4" cols="50" th:data-paper-id="${paper.id}"></textarea>
+        <button onclick="submitReview()">Submit Review</button>
+    </div>
 </div>
 
-<embed th:src="@{'/pdf/view/' + ${paper.id}}" type="application/pdf" width="100%" height="600px"/>
+<footer class="footer">
+    <div class="container">
+        <span>&copy; 2024 PeerReviewPro. All rights reserved.</span>
+    </div>
+</footer>
 
-<div>
-    <h2>Review Sentiment Details</h2>
-    <p th:text="'Sentiment Label: ' + ${paper.sentimentLabel}"></p>
-    <p th:text="'Sentiment Score: ' + ${paper.sentimentScore}"></p>
-    <p th:text="'Sentiment Magnitude: ' + ${paper.sentimentMagnitude}"></p>
-</div>
-
-<!-- Display Reviews -->
-<div th:if="${not #lists.isEmpty(paper.reviews)}">
-    <h2>Reviews</h2>
-    <ul>
-        <li th:each="review : ${paper.reviews}">
-            <!-- Display review details as needed -->
-<!--            <p th:text="${review.author.username} + ': ' + ${review.content}"></p>-->
-
-            <p th:text="'********: ' + ${review.content}"></p>
-
-        </li>
-    </ul>
-</div>
-
-<div th:if="${isReviewer}">
-    <label for="reviewText">Write a review here:</label>
-    <textarea id="reviewText" name="reviewText" rows="4" cols="50" th:data-paper-id="${paper.id}"></textarea>
-    <button onclick="submitReview()">Submit Review</button>
-</div>
-
-<script src="/js/paper.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
